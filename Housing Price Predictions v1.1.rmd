@@ -1,0 +1,817 @@
+---
+title: "Housing Price Predictions"
+output:
+  html_document:
+    df_print: paged
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+#Set training data and test data
+train = read.csv("train.csv", stringsAsFactors = F)
+test = read.csv("test.csv", stringsAsFactors = F)
+```
+
+Histogram/Plot the attributes
+```{r}
+library(ggplot2)
+hist(train$MSSubClass)
+hist(test$MSSubClass)
+boxplot(train$MSSubClass)
+boxplot(test$MSSubClass)
+
+library(ggplot2)
+train1 <- data.frame(train$MSZoning)
+ggplot(train1) + geom_bar(aes(x=train$MSZoning))
+
+test1 <- data.frame(test$MSZoning)
+ggplot(test1) + geom_bar(aes(x=test$MSZoning))
+
+
+Mode <- function(x) {
+  ux <- unique(x)
+  ux[which.max((tabulate(match(x, ux))))]
+}
+hist(train$LotFrontage)
+hist(test$LotFrontage)
+boxplot(train$LotFrontage)
+boxplot(test$LotFrontage)
+median(train$LotFrontage, na.rm= TRUE)
+median(test$LotFrontage, na.rm= TRUE)
+
+hist(train$LotArea, xlim = c(0,55000))
+hist(test$LotArea, xlim = c(0,55000))
+boxplot(train$LotArea)
+boxplot(test$LotArea)
+summary(train$LotArea)
+summary(test$LotArea)
+
+train2 <- data.frame(train$Street)
+ggplot(train2) + geom_bar(aes(x=train$Street))
+
+test2 <- data.frame(test$Street)
+ggplot(test2) + geom_bar(aes(x=test$Street))
+
+train3 <- data.frame(train$Alley)
+ggplot(train3) + geom_bar(aes(x=train$Alley))
+
+test3<- data.frame(test$Alley)
+ggplot(test3) + geom_bar(aes(x=test$Alley)) 
+
+train4 <- data.frame(train$LotShape)
+ggplot(train4) + geom_bar(aes(x=train$LotShape))
+
+test4<- data.frame(test$LotShape)
+ggplot(test4) + geom_bar(aes(x=test$LotShape)) 
+
+train5 <- data.frame(train$LandContour)
+ggplot(train5) + geom_bar(aes(x=train$LandContour))
+
+test5<- data.frame(test$LandContour)
+ggplot(test5) + geom_bar(aes(x=test$LandContour)) 
+
+train6 <- data.frame(train$Utilities)
+ggplot(train6) + geom_bar(aes(x=train$Utilities))
+
+test6<- data.frame(test$Utilities)
+ggplot(test6) + geom_bar(aes(x=test$Utilities)) 
+
+train6 <- data.frame(train$LotConfig)
+ggplot(train6) + geom_bar(aes(x=train$LotConfig))
+
+test6<- data.frame(test$LotConfig)
+ggplot(test6) + geom_bar(aes(x=test$LotConfig))
+
+train6 <- data.frame(train$LandSlope)
+ggplot(train6) + geom_bar(aes(x=train$LandSlope))
+
+test6<- data.frame(test$LandSlope)
+ggplot(test6) + geom_bar(aes(x=test$LandSlope))
+
+train6 <- data.frame(train$Neighborhood)
+ggplot(train6) + geom_bar(aes(x=train$Neighborhood))
+
+test6<- data.frame(test$Neighborhood)
+ggplot(test6) + geom_bar(aes(x=test$Neighborhood))
+
+train6 <- data.frame(train$Condition1)
+ggplot(train6) + geom_bar(aes(x=train$Condition1))
+
+test6<- data.frame(test$Condition1)
+ggplot(test6) + geom_bar(aes(x=test$Condition1))
+
+train6 <- data.frame(train$Condition2)
+ggplot(train6) + geom_bar(aes(x=train$Condition2))
+
+test6<- data.frame(test$Condition2)
+ggplot(test6) + geom_bar(aes(x=test$Condition2))
+
+train6 <- data.frame(train$BldgType)
+ggplot(train6) + geom_bar(aes(x=train$BldgType))
+
+test6<- data.frame(test$BldgType)
+ggplot(test6) + geom_bar(aes(x=test$BldgType))
+
+train6 <- data.frame(train$HouseStyle)
+ggplot(train6) + geom_bar(aes(x=train$HouseStyle))
+
+test6<- data.frame(test$HouseStyle)
+ggplot(test6) + geom_bar(aes(x=test$HouseStyle))
+
+train6 <- data.frame(train$OverallQual)
+ggplot(train6) + geom_bar(aes(x=train$OverallQual))
+
+test6<- data.frame(test$OverallQual)
+ggplot(test6) + geom_bar(aes(x=test$OverallQual))
+
+train6 <- data.frame(train$OverallCond)
+ggplot(train6) + geom_bar(aes(x=train$OverallCond))
+
+test6<- data.frame(test$OverallCond)
+ggplot(test6) + geom_bar(aes(x=test$OverallCond))
+
+hist(train$YearBuilt)
+hist(test$YearBuilt)
+
+hist(train$YearRemodAdd)
+hist(test$YearRemodAdd)
+
+train6 <- data.frame(train$RoofStyle)
+ggplot(train6) + geom_bar(aes(x=train$RoofStyle))
+
+test6<- data.frame(test$RoofStyle)
+ggplot(test6) + geom_bar(aes(x=test$RoofStyle))
+
+train6 <- data.frame(train$RoofMatl)
+ggplot(train6) + geom_bar(aes(x=train$RoofMatl))
+
+test6<- data.frame(test$RoofMatl)
+ggplot(test6) + geom_bar(aes(x=test$RoofMatl))
+
+test6<- data.frame(test$RoofStyle)
+ggplot(test6) + geom_bar(aes(x=test$RoofStyle))
+
+test6<- data.frame(train$RoofStyle)
+ggplot(test6) + geom_bar(aes(x=train$RoofStyle))
+
+test6<- data.frame(train$Exterior1st)
+ggplot(test6) + geom_bar(aes(x=train$Exterior1st))
+
+test6<- data.frame(test$Exterior1st)
+ggplot(test6) + geom_bar(aes(x=test$Exterior1st))
+
+test6<- data.frame(train$Exterior2nd)
+ggplot(test6) + geom_bar(aes(x=train$Exterior2nd))
+
+test6<- data.frame(test$Exterior1st)
+ggplot(test6) + geom_bar(aes(x=test$Exterior2nd))
+
+test6<- data.frame(train$MasVnrType)
+ggplot(test6) + geom_bar(aes(x=train$MasVnrType))
+
+test6<- data.frame(test$MasVnrType)
+ggplot(test6) + geom_bar(aes(x=test$MasVnrType))
+
+hist(train$MasVnrArea)
+hist(test$MasVnrArea)
+
+test6<- data.frame(train$ExterQual)
+ggplot(test6) + geom_bar(aes(x=train$ExterQual))
+
+test6<- data.frame(test$ExterQual)
+ggplot(test6) + geom_bar(aes(x=test$ExterQual))
+
+test6<- data.frame(train$ExterCond)
+ggplot(test6) + geom_bar(aes(x=train$ExterCond))
+
+test6<- data.frame(test$ExterCond)
+ggplot(test6) + geom_bar(aes(x=test$ExterCond))
+
+test6<- data.frame(train$Foundation)
+ggplot(test6) + geom_bar(aes(x=train$Foundation))
+
+test6<- data.frame(test$ExterCond)
+ggplot(test6) + geom_bar(aes(x=test$Foundation))
+
+ggplot(data.frame(train$BsmtQual)) + geom_bar(aes(x=train$BsmtQual))
+ggplot(data.frame(test$BsmtQual)) + geom_bar(aes(x=test$BsmtQual))
+
+ggplot(data.frame(train$BsmtCond)) + geom_bar(aes(x=train$BsmtCond))
+ggplot(data.frame(test$BsmtCond)) + geom_bar(aes(x=test$BsmtCond))
+
+ggplot(data.frame(train$BsmtExposure)) + geom_bar(aes(x=train$BsmtExposure))
+ggplot(data.frame(test$BsmtExposure)) + geom_bar(aes(x=test$BsmtExposure))
+
+ggplot(data.frame(train$BsmtFinType1)) + geom_bar(aes(x=train$BsmtFinType1))
+ggplot(data.frame(test$BsmtFinType1)) + geom_bar(aes(x=test$BsmtFinType1))
+
+hist(train$BsmtFinSF1)
+hist(test$BsmtFinSF1)
+
+ggplot(data.frame(train$BsmtFinType2)) + geom_bar(aes(x=train$BsmtFinType2))
+ggplot(data.frame(test$BsmtFinType2)) + geom_bar(aes(x=test$BsmtFinType2))
+
+hist(train$BsmtFinSF2)
+hist(test$BsmtFinSF2)
+
+hist(train$BsmtUnfSF)
+hist(test$BsmtUnfSF)
+
+hist(train$TotalBsmtSF)
+hist(test$TotalBsmtSF)
+
+ggplot(data.frame(train$Heating)) + geom_bar(aes(x=train$Heating))
+ggplot(data.frame(test$Heating)) + geom_bar(aes(x=test$Heating))
+
+ggplot(data.frame(train$HeatingQC)) + geom_bar(aes(x=train$HeatingQC))
+ggplot(data.frame(test$HeatingQC)) + geom_bar(aes(x=test$HeatingQC))
+
+ggplot(data.frame(train$CentralAir)) + geom_bar(aes(x=train$CentralAir))
+ggplot(data.frame(test$CentralAir)) + geom_bar(aes(x=test$CentralAir))
+
+ggplot(data.frame(train$CentralAir)) + geom_bar(aes(x=train$CentralAir))
+ggplot(data.frame(test$CentralAir)) + geom_bar(aes(x=test$CentralAir))
+
+ggplot(data.frame(train$Electrical)) + geom_bar(aes(x=train$Electrical))
+ggplot(data.frame(test$Electrical)) + geom_bar(aes(x=test$Electrical))
+
+hist(train$X1stFlrSF)
+hist(test$X1stFlrSF)
+mean(train$X1stFlrSF)
+mean(test$X1stFlrSF)
+
+hist(train$X2ndFlrSF)
+hist(test$X2ndFlrSF)
+mean(train$X2ndFlrSF)
+mean(test$X2ndFlrSF)
+
+hist(train$LowQualFinSF)
+hist(test$LowQualFinSF)
+mean(train$LowQualFinSF)
+mean(test$LowQualFinSF)
+
+hist(train$GrLivArea)
+hist(test$GrLivArea)
+mean(train$GrLivArea)
+mean(test$GrLivArea)
+
+hist(train$BsmtFullBath)
+hist(test$BsmtFullBath)
+
+hist(train$BsmtHalfBath)
+hist(test$BsmtHalfBath)
+
+hist(train$BedroomAbvGr)
+hist(test$Bedroom)
+
+hist(train$KitchenAbvGr)
+hist(test$KitchenAbvGr)
+
+ggplot(data.frame(train$KitchenQual)) + geom_bar(aes(x=train$KitchenQual))
+ggplot(data.frame(test$KitchenQual)) + geom_bar(aes(x=test$KitchenQual))
+
+hist(train$TotRmsAbvGrd)
+hist(test$TotRmsAbvGrd)
+
+ggplot(data.frame(train$Functional)) + geom_bar(aes(x=train$Functional))
+ggplot(data.frame(test$Functional)) + geom_bar(aes(x=test$Functional))
+
+hist(train$Fireplaces)
+hist(test$Fireplaces)
+
+ggplot(data.frame(train$FireplaceQu)) + geom_bar(aes(x=train$FireplaceQu))
+ggplot(data.frame(test$FireplaceQu)) + geom_bar(aes(x=test$FireplaceQu))
+
+ggplot(data.frame(train$GarageType)) + geom_bar(aes(x=train$GarageType))
+ggplot(data.frame(test$GarageType)) + geom_bar(aes(x=test$GarageType))
+
+hist(train$GarageYrBlt)
+hist(test$GarageYrBlt)
+
+ggplot(data.frame(train$GarageFinish)) + geom_bar(aes(x=train$GarageFinish))
+ggplot(data.frame(test$GarageFinish)) + geom_bar(aes(x=test$GarageFinish))
+
+hist(train$GarageArea)
+hist(test$GarageArea)
+mean(train$GarageArea)
+mean(test$GarageArea)
+
+ggplot(data.frame(train$GarageQual)) + geom_bar(aes(x=train$GarageQual))
+ggplot(data.frame(test$GarageQual)) + geom_bar(aes(x=test$GarageQual))
+
+ggplot(data.frame(train$GarageCond)) + geom_bar(aes(x=train$GarageCond))
+ggplot(data.frame(test$GarageCond)) + geom_bar(aes(x=test$GarageCond))
+
+ggplot(data.frame(train$PavedDrive)) + geom_bar(aes(x=train$PavedDrive))
+ggplot(data.frame(test$PavedDrive)) + geom_bar(aes(x=test$PavedDrive))
+
+hist(train$WoodDeckSF)
+hist(test$WoodDeckSF)
+
+hist(train$OpenPorchSF)
+hist(test$OpenPorchSF)
+
+hist(train$EnclosedPorch)
+hist(test$EnclosedPorch)
+
+hist(train$X3SsnPorch)
+hist(test$X3SsnPorch)
+
+hist(train$ScreenPorch)
+hist(test$ScreenPorch)
+
+hist(train$PoolArea)
+hist(test$PoolArea)
+
+ggplot(data.frame(train$PoolQC)) + geom_bar(aes(x=train$PoolQC))
+ggplot(data.frame(test$PoolQC)) + geom_bar(aes(x=test$PoolQC))
+
+ggplot(data.frame(train$Fence)) + geom_bar(aes(x=train$Fence))
+ggplot(data.frame(test$Fence)) + geom_bar(aes(x=test$Fence))
+
+ggplot(data.frame(train$MiscFeature)) + geom_bar(aes(x=train$MiscFeature))
+ggplot(data.frame(test$MiscFeature)) + geom_bar(aes(x=test$MiscFeature))
+
+hist(train$MiscVal)
+hist(test$MiscVal)
+mean(train$MiscVal)
+mean(test$MiscVal)
+
+hist(train$MoSold)
+hist(test$MoSold)
+
+hist(train$YrSold)
+hist(test$YrSold)
+
+ggplot(data.frame(train$SaleType)) + geom_bar(aes(x=train$SaleType))
+ggplot(data.frame(test$SaleType)) + geom_bar(aes(x=test$SaleType))
+
+ggplot(data.frame(train$SaleCondition)) + geom_bar(aes(x=train$SaleCondition))
+ggplot(data.frame(test$SaleCondition)) + geom_bar(aes(x=test$SaleCondition))
+```
+
+Dimensions of the dataset for both the train and test dataset.
+```{r}
+#Get dimensions of the train dataset
+#There are 1,460 rows
+nrow(train)
+#There are 81 columns
+ncol(train)
+
+#Get dimensions of the test data
+#There are 1,459 rows in the test data
+nrow(test)
+#There are 80 columns in the test data
+ncol(test)
+```
+Determine features/variables that are categorical and numerical in nature in the train dataset
+```{r}
+categoricalTrain <- names(which(sapply(train, class) == "character"))
+#43 features are categorical in nature
+length(categoricalTrain)
+categoricalTrain
+print("   ")
+#Count the number of features that are numerical in the test dataset
+numericalTrain <- names(which(sapply(train, class) != "character"))
+#38 features are numerical in nature
+length(numericalTrain)
+
+numericalTrain
+```
+
+Determine features/variables that are categorical and numerical in nature in the test dataset
+```{r}
+categoricalTest <- names(which(sapply(test, class) == "character"))
+#43 features are categorical in nature
+length(categoricalTest)
+
+numericalTest <- names(which(sapply(test, class) != "character"))
+#37 features are numerical in nature
+length(numericalTest)
+```
+
+```{r}
+#There is a discrepancy in the number of features between the test and train dataset
+trainColumns <- colnames(train)
+testColumns <- colnames(test)
+
+#The result is the SalePrice attribute is missing in the test dataset but that is to be expected.
+matchV <- match(trainColumns, testColumns)
+head(train[is.na(matchV)])
+```
+
+It can be noted that the following categorical features are noted with "NA" but it does not necessarily mean that the feature has an invalid value due to error but it actually does not possess the physical feature.
+```{r}
+#Quick structure look of the train dataset
+#str(train)
+
+print("Train dataset that have NA values")
+for (col in 1:ncol(train)) {
+  x<- colnames(train[col])
+  y<- sum(is.na(train[col]))
+  if (y > 0) {
+    print(paste(x,y))
+  }
+}
+
+print("Test data that have NA values")
+for (col in 1:ncol(test)) {
+  x<- colnames(test[col])
+  y<- sum(is.na(test[col]))
+  if (y > 0) {
+    print(paste(x,y))
+  }
+}
+```
+
+To combat this issue, we will replace the "NA" in these to their actual value based on the data description text file.
+```{r}
+#Put as 0
+train$Alley[is.na(train$Alley)] = "No alley access"
+test$Alley[is.na(test$Alley)] = "No alley access"
+
+train$BsmtQual[is.na(train$BsmtQual)] = "No Basement"
+test$BsmtQual[is.na(test$BsmtQual)] = "No Basement"
+
+train$BsmtCond[is.na(train$BsmtCond)] = "No Basement"
+test$BsmtCond[is.na(test$BsmtCond)] = "No Basement"
+
+train$BsmtExposure[is.na(train$BsmtExposure)] = "No Basement"
+test$BsmtExposure[is.na(test$BsmtExposure)] = "No Basement"
+
+train$BsmtFinType1[is.na(train$BsmtFinType1)] = "No Basement"
+test$BsmtFinType1[is.na(test$BsmtFinType1)] = "No Basement"
+
+train$BsmtFinType2[is.na(train$BsmtFinType2)] = "No Basement"
+test$BsmtFinType2[is.na(test$BsmtFinType2)] = "No Basement"
+
+train$FireplaceQu[is.na(train$FireplaceQu)] = "No Fireplace"
+test$FireplaceQu[is.na(test$FireplaceQu)] = "No Fireplace"
+
+train$GarageType[is.na(train$GarageType)] = "No Garage"
+test$GarageType[is.na(test$GarageType)] = "No Garage"
+
+train$GarageFinish[is.na(train$GarageFinish)] = "No Garage"
+test$GarageFinish[is.na(test$GarageFinish)] = "No Garage"
+
+train$GarageQual[is.na(train$GarageQual)] = "No Garage"
+test$GarageQual[is.na(test$GarageQual)] = "No Garage"
+
+train$GarageCond[is.na(train$GarageCond)] = "No Garage"
+test$GarageCond[is.na(test$GarageCond)] = "No Garage"
+
+train$PoolQC[is.na(train$PoolQC)] = "No Pool"
+test$PoolQC[is.na(test$PoolQC)] = "No Pool"
+
+train$Fence[is.na(train$Fence)] = "No Fence"
+test$Fence[is.na(test$Fence)] = "No Fence"
+
+train$MiscFeature[is.na(train$MiscFeature)] = "None"
+test$MiscFeature[is.na(test$MiscFeature)] = "None"
+```
+
+With the changed values, the "NA" values remaining are numerical or categorical values that are not detailed in the data description text file.
+```{r}
+print("Train Features that have NA")
+for (col in 1:ncol(train)) {
+  x<- colnames(train[col])
+  y<- sum(is.na(train[col]))
+  if (y > 0) {
+    print(paste(x,y))
+  }
+}
+
+print("Test Features that have NA")
+
+for (col in 1:ncol(test)) {
+  x<- colnames(test[col])
+  y<- sum(is.na(test[col]))
+  if (y > 0) {
+    print(paste(x,y))
+  }
+}
+```
+
+These following categorical variables still have NA values.
+```{r}
+library(tidyverse)
+
+categoricalTestNA <- test %>% select_if(is.character)
+
+print("Test Categorical Features")
+for (col in 1:ncol(categoricalTestNA)) {
+  x<- colnames(categoricalTestNA[col])
+  y<- sum(is.na(categoricalTestNA[col]))
+  if (y > 0) {
+    print(paste(x,y))
+  }
+}
+
+
+categoricalTrainNA <- train %>% select_if(is.character)
+
+print("Train Categorical Features")
+for (col in 1:ncol(categoricalTrainNA)) {
+  x<- colnames(categoricalTrainNA[col])
+  y<- sum(is.na(categoricalTrainNA[col]))
+  if (y > 0) {
+    print(paste(x,y))
+  }
+}
+```
+
+
+For the following categorical features that have NA, replace with the mode value.
+```{r}
+#mode function
+Mode <- function(x) {
+  ux <- unique(x)
+  ux[which.max((tabulate(match(x, ux))))]
+}
+
+train$MasVnrType[is.na(train$MasVnrType)] = Mode(train$MasVnrType)
+train$Electrical[is.na(train$Electrical)] = Mode(train$Electrical)
+
+test$MSZoning[is.na(test$MSZoning)] = Mode(test$MSZoning)
+test$Utilities[is.na(test$Utilities)] = Mode(test$Utilities)
+test$Exterior1st[is.na(test$Exterior1st)] = Mode(test$Exterior1st)
+test$Exterior2nd[is.na(test$Exterior2nd)] = Mode(test$Exterior2nd)
+test$MasVnrType[is.na(test$MasVnrType)] = Mode(test$MasVnrType)
+test$KitchenQual[is.na(test$KitchenQual)] = Mode(test$KitchenQual)
+test$Functional[is.na(test$Functional)] = Mode(test$Functional)
+test$SaleType[is.na(test$SaleType)] = Mode(test$SaleType)
+#Mode(data$Neighborhood)
+#Mode(data$BldgType)
+#Mode(data$SaleCondition)
+#Mode(data$OverallQual)
+#Mode(data$OverallCond)
+#Mode(data$YearBuilt)
+#Mode(data$MoSold)
+
+#mean(data$OverallQual)
+#mean(data$OverallCond)
+#mean(data$YearBuilt)
+
+#median(data$OverallQual)
+#median(data$OverallCond)
+#median(data$YearBuilt)
+
+#sd(data$OverallQual)
+#sd(data$OverallCond)
+#sd(data$LotArea)
+```
+
+For the numerical features, it seems plausible that a "NA" dictate that it is in fact 0. This links directly with the fact that some houses may not have a basement, alley, garage, fence, and etc.
+```{r}
+#These are the numerical features left with NAs
+numericalTestNA <- test %>% select_if(is.numeric)
+
+print("Test Numerical Features")
+for (col in 1:ncol(numericalTestNA)) {
+  x<- colnames(numericalTestNA[col])
+  y<- sum(is.na(numericalTestNA[col]))
+  if (y > 0) {
+    print(paste(x,y))
+  }
+}
+
+
+numericalTrainNA <- train %>% select_if(is.numeric)
+
+print("Train Numerical Features")
+for (col in 1:ncol(numericalTrainNA)) {
+  x<- colnames(numericalTrainNA[col])
+  y<- sum(is.na(numericalTrainNA[col]))
+  if (y > 0) {
+    print(paste(x,y))
+  }
+}
+```
+
+To address this issue, we will assign 0 to the features that contain "Bsmt" and "Garage".
+```{r}
+test$BsmtFinSF1[is.na(test$BsmtFinSF1)] = 0
+test$BsmtFinSF2[is.na(test$BsmtFinSF2)] = 0
+test$BsmtUnfSF[is.na(test$BsmtUnfSF)] = 0
+test$TotalBsmtSF[is.na(test$TotalBsmtSF)] = 0
+test$BsmtFullBath[is.na(test$BsmtFullBath)] = 0
+test$BsmtHalfBath[is.na(test$BsmtHalfBath)] = 0
+test$GarageCars[is.na(test$GarageCars)] = 0
+test$GarageArea[is.na(test$GarageArea)] = 0
+```
+
+Secondly, for the GarageYrBlt and MasVnrArea, putting a 0 wouldn't make sense. There are 78 rows that do not have a year assigned that could actually have a garage and the for MasVnrArea, there is some areas just not being report for the masonry veneer area because info was lacking. Instead of removing the rows completely (effectively removing a minimum of 78 rows and up to a maximum of 86 rows), we can assign a value of -1 that assign a non-logical value and can help identify that these are outliers.
+```{r}
+test$GarageYrBlt[is.na(test$GarageYrBlt)] = -1
+test$MasVnrArea[is.na(test$MasVnrArea)] = -1
+train$MasVnrArea[is.na(train$MasVnrArea)] = -1
+train$GarageYrBlt[is.na(train$GarageYrBlt)] = -1
+```
+
+For the case of the missing LotFrontage area, we can assume there are outliers present and so a median approach can be used for these missing values
+```{r}
+test$LotFrontage[is.na(test$LotFrontage)] = median(test$LotFrontage, na.rm = TRUE)
+train$LotFrontage[is.na(train$LotFrontage)] = median(train$LotFrontage, na.rm = TRUE)
+```
+
+For the purposes of forming a linear regression model, the categorical attributes most be assigned a number value instead of a character value.
+```{r}
+#testdata <- test
+#testdata
+#unclass(testdata)
+#testdata2 <- as.numeric(factor(testdata))
+#testdata2
+
+#Perform all the changes on a second duplicate data frame
+modifiedTest <- test
+modifiedTrain <- train
+
+#Modifying the values to the number values; they are assigned alphabetically
+modifiedTest$MSZoning <- as.numeric(factor(modifiedTest$MSZoning))
+modifiedTest$Street <- as.numeric(factor(modifiedTest$Street))
+modifiedTest$Alley <- as.numeric(factor(modifiedTest$Alley))
+modifiedTest$LotShape <- as.numeric(factor(modifiedTest$LotShape))
+modifiedTest$LandContour <- as.numeric(factor(modifiedTest$LandContour))
+modifiedTest$Utilities <- as.numeric(factor(modifiedTest$Utilities))
+modifiedTest$LotConfig <- as.numeric(factor(modifiedTest$LotConfig))
+modifiedTest$LandSlope <- as.numeric(factor(modifiedTest$LandSlope))
+modifiedTest$Neighborhood <- as.numeric(factor(modifiedTest$Neighborhood))
+modifiedTest$Condition1 <- as.numeric(factor(modifiedTest$Condition1))
+modifiedTest$Condition2 <- as.numeric(factor(modifiedTest$Condition2))
+modifiedTest$BldgType <- as.numeric(factor(modifiedTest$BldgType))
+modifiedTest$HouseStyle <- as.numeric(factor(modifiedTest$HouseStyle))
+modifiedTest$RoofStyle <- as.numeric(factor(modifiedTest$RoofStyle))
+modifiedTest$RoofMatl <- as.numeric(factor(modifiedTest$RoofMatl))
+modifiedTest$Exterior1st <- as.numeric(factor(modifiedTest$Exterior1st))
+modifiedTest$Exterior2nd <- as.numeric(factor(modifiedTest$Exterior2nd))
+modifiedTest$MasVnrType <- as.numeric(factor(modifiedTest$MasVnrType))
+modifiedTest$ExterQual <- as.numeric(factor(modifiedTest$ExterQual))
+modifiedTest$ExterCond <- as.numeric(factor(modifiedTest$ExterCond))
+modifiedTest$Foundation <- as.numeric(factor(modifiedTest$Foundation))
+modifiedTest$BsmtQual <- as.numeric(factor(modifiedTest$BsmtQual))
+modifiedTest$BsmtCond <- as.numeric(factor(modifiedTest$BsmtCond))
+modifiedTest$BsmtExposure <- as.numeric(factor(modifiedTest$BsmtExposure))
+modifiedTest$BsmtFinType1 <- as.numeric(factor(modifiedTest$BsmtFinType1))
+modifiedTest$BsmtFinType2 <- as.numeric(factor(modifiedTest$BsmtFinType2))
+modifiedTest$Heating <- as.numeric(factor(modifiedTest$Heating))
+modifiedTest$HeatingQC <- as.numeric(factor(modifiedTest$HeatingQC))
+modifiedTest$CentralAir <- as.numeric(factor(modifiedTest$CentralAir))
+modifiedTest$Electrical <- as.numeric(factor(modifiedTest$Electrical))
+modifiedTest$KitchenQual <- as.numeric(factor(modifiedTest$KitchenQual))
+modifiedTest$Functional <- as.numeric(factor(modifiedTest$Functional))
+modifiedTest$FireplaceQu <- as.numeric(factor(modifiedTest$FireplaceQu))
+modifiedTest$GarageType <- as.numeric(factor(modifiedTest$GarageType))
+modifiedTest$GarageFinish <- as.numeric(factor(modifiedTest$GarageFinish))
+modifiedTest$GarageQual <- as.numeric(factor(modifiedTest$GarageQual))
+modifiedTest$GarageCond <- as.numeric(factor(modifiedTest$GarageCond))
+modifiedTest$PavedDrive <- as.numeric(factor(modifiedTest$PavedDrive))
+modifiedTest$PoolQC <- as.numeric(factor(modifiedTest$PoolQC))
+modifiedTest$Fence <- as.numeric(factor(modifiedTest$Fence))
+modifiedTest$MiscFeature <- as.numeric(factor(modifiedTest$MiscFeature))
+modifiedTest$SaleType <- as.numeric(factor(modifiedTest$SaleType))
+modifiedTest$SaleCondition <- as.numeric(factor(modifiedTest$SaleCondition))
+
+modifiedTrain$MSZoning <- as.numeric(factor(modifiedTrain$MSZoning))
+modifiedTrain$Street <- as.numeric(factor(modifiedTrain$Street))
+modifiedTrain$Alley <- as.numeric(factor(modifiedTrain$Alley))
+modifiedTrain$LotShape <- as.numeric(factor(modifiedTrain$LotShape))
+modifiedTrain$LandContour <- as.numeric(factor(modifiedTrain$LandContour))
+modifiedTrain$Utilities <- as.numeric(factor(modifiedTrain$Utilities))
+modifiedTrain$LotConfig <- as.numeric(factor(modifiedTrain$LotConfig))
+modifiedTrain$LandSlope <- as.numeric(factor(modifiedTrain$LandSlope))
+modifiedTrain$Neighborhood <- as.numeric(factor(modifiedTrain$Neighborhood))
+modifiedTrain$Condition1 <- as.numeric(factor(modifiedTrain$Condition1))
+modifiedTrain$Condition2 <- as.numeric(factor(modifiedTrain$Condition2))
+modifiedTrain$BldgType <- as.numeric(factor(modifiedTrain$BldgType))
+modifiedTrain$HouseStyle <- as.numeric(factor(modifiedTrain$HouseStyle))
+modifiedTrain$RoofStyle <- as.numeric(factor(modifiedTrain$RoofStyle))
+modifiedTrain$RoofMatl <- as.numeric(factor(modifiedTrain$RoofMatl))
+modifiedTrain$Exterior1st <- as.numeric(factor(modifiedTrain$Exterior1st))
+modifiedTrain$Exterior2nd <- as.numeric(factor(modifiedTrain$Exterior2nd))
+modifiedTrain$MasVnrType <- as.numeric(factor(modifiedTrain$MasVnrType))
+modifiedTrain$ExterQual <- as.numeric(factor(modifiedTrain$ExterQual))
+modifiedTrain$ExterCond <- as.numeric(factor(modifiedTrain$ExterCond))
+modifiedTrain$Foundation <- as.numeric(factor(modifiedTrain$Foundation))
+modifiedTrain$BsmtQual <- as.numeric(factor(modifiedTrain$BsmtQual))
+modifiedTrain$BsmtCond <- as.numeric(factor(modifiedTrain$BsmtCond))
+modifiedTrain$BsmtExposure <- as.numeric(factor(modifiedTrain$BsmtExposure))
+modifiedTrain$BsmtFinType1 <- as.numeric(factor(modifiedTrain$BsmtFinType1))
+modifiedTrain$BsmtFinType2 <- as.numeric(factor(modifiedTrain$BsmtFinType2))
+modifiedTrain$Heating <- as.numeric(factor(modifiedTrain$Heating))
+modifiedTrain$HeatingQC <- as.numeric(factor(modifiedTrain$HeatingQC))
+modifiedTrain$CentralAir <- as.numeric(factor(modifiedTrain$CentralAir))
+modifiedTrain$Electrical <- as.numeric(factor(modifiedTrain$Electrical))
+modifiedTrain$KitchenQual <- as.numeric(factor(modifiedTrain$KitchenQual))
+modifiedTrain$Functional <- as.numeric(factor(modifiedTrain$Functional))
+modifiedTrain$FireplaceQu <- as.numeric(factor(modifiedTrain$FireplaceQu))
+modifiedTrain$GarageType <- as.numeric(factor(modifiedTrain$GarageType))
+modifiedTrain$GarageFinish <- as.numeric(factor(modifiedTrain$GarageFinish))
+modifiedTrain$GarageQual <- as.numeric(factor(modifiedTrain$GarageQual))
+modifiedTrain$GarageCond <- as.numeric(factor(modifiedTrain$GarageCond))
+modifiedTrain$PavedDrive <- as.numeric(factor(modifiedTrain$PavedDrive))
+modifiedTrain$PoolQC <- as.numeric(factor(modifiedTrain$PoolQC))
+modifiedTrain$Fence <- as.numeric(factor(modifiedTrain$Fence))
+modifiedTrain$MiscFeature <- as.numeric(factor(modifiedTrain$MiscFeature))
+modifiedTrain$SaleType <- as.numeric(factor(modifiedTrain$SaleType))
+modifiedTrain$SaleCondition <- as.numeric(factor(modifiedTrain$SaleCondition))
+
+
+#testdata[92]
+#testdata2[92]
+
+#testdata[4]
+#testdata2[4]
+#data.matrix(mydf)
+#b[] <- data.matrix(mydf)
+#mydf
+#str(mydf)
+
+#unclass(mydf2)
+#DataFrame[] <- lapply(mydf, as.integer)
+#corrplot?
+#library(corrplot)
+#corrplot(data)
+```
+
+Dummy
+```{r}
+print("Train dataset that have NA values")
+for (col in 1:ncol(modifiedTrain)) {
+  x<- colnames(modifiedTrain[col])
+  y<- sum(is.na(modifiedTrain[col]))
+  if (y > 0) {
+    print(paste(x,y))
+  }
+}
+
+print("Test data that have NA values")
+for (col in 1:ncol(modifiedTest)) {
+  x<- colnames(modifiedTest[col])
+  y<- sum(is.na(modifiedTest[col]))
+  if (y > 0) {
+    print(paste(x,y))
+  }
+}
+```
+
+
+Normalize the data.
+```{r}
+normalize <- function(x) {
+  return ((x-min(x)) / (max(x)-min(x)))
+}
+
+#is.na(modifiedTest$Utilities)
+#sum(modifiedTest$Utilities)
+#MasVnrTypeNorm <- as.data.frame(lapply(test$MasVnrArea, normalize))
+
+#Utilities was excluded as it can't be normalized since it's one-sided results in test
+testNorm <- apply(modifiedTest[, c(2:9, 11:80)],2,function(x) (x-min(x)/(max(x)-min(x))))
+trainNorm <- apply(modifiedTrain[, 2:81],2,function(x) (x-min(x)/(max(x)-min(x))))
+```
+
+Corrplot to see what is plotted in relevance
+```{r}
+#is.na.data.frame(modifiedTest)
+library(corrplot)
+
+cor(testNorm)
+corrplot(cor(testNorm))
+
+cor(trainNorm)
+corrplot(cor(trainNorm))
+```
+PCA for further attribute analysis
+```{r}
+library(factoextra)
+
+train.pca <- prcomp(trainNorm, scale = TRUE, center = TRUE)
+fviz_eig(train.pca)
+
+test.pca <- prcomp(testNorm, scale = TRUE, center = TRUE)
+fviz_eig(test.pca)
+```
+```{r}
+library(MASS)
+library(leaps)
+
+model_train <- lm(SalePrice ~ ., data = data.frame(trainNorm))
+
+full <- lm(SalePrice ~ ., data = data.frame(trainNorm))
+null <- lm(SalePrice ~ 1, data = data.frame(trainNorm))
+
+#Tried attributute valuation with stepwise regression. Too big.
+#stepF <- stepAIC(null, scope = list(lower=null, upper=full), direction = "forward", trace = TRUE)
+#subsets <- regsubsets(SalePrice~ ., data = data.frame(trainNorm), nbest = 1, nvmax = 10, really.big = TRUE)
+#sub.sum <- summary(subsets)
+#as.data.frame(sub.sum$outmat)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
