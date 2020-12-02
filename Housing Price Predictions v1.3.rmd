@@ -10,19 +10,11 @@ Extract the data.
 #Set training data and test data
 train = read.csv("train.csv", stringsAsFactors = F)
 test = read.csv("test.csv", stringsAsFactors = F)
-
-mean(train)
 ```
 
 Histogram/Plot and any additional exploratory analysis of the attributes.
 ```{r}
 library(ggplot2)
-
-#Calculate mode
-Mode <- function(x) {
-  ux <- unique(x)
-  ux[which.max((tabulate(match(x, ux))))]
-}
 
 hist(train$MSSubClass)
 hist(test$MSSubClass)
@@ -543,16 +535,6 @@ test$MasVnrType[is.na(test$MasVnrType)] = Mode(test$MasVnrType)
 test$KitchenQual[is.na(test$KitchenQual)] = Mode(test$KitchenQual)
 test$Functional[is.na(test$Functional)] = Mode(test$Functional)
 test$SaleType[is.na(test$SaleType)] = Mode(test$SaleType)
-
-Mode(train$MasVnrType)
-Mode(train$Electrical)
-Mode(test$MSZoning)
-Mode(test$Exterior1st)
-Mode(test$Exterior2nd)
-Mode(test$MasVnrType)
-Mode(test$KitchenQual)
-Mode(test$Functional)
-Mode(test$SaleType)
 ```
 
 For the numerical features, it seems plausible that a "NA" dictate that it is in fact 0. This links directly with the fact that some houses may not have a basement, alley, garage, fence, and etc.
@@ -568,7 +550,6 @@ for (col in 1:ncol(numericalTestNA)) {
     print(paste(x,y))
   }
 }
-
 
 numericalTrainNA <- train %>% select_if(is.numeric)
 
@@ -608,37 +589,6 @@ test$LotFrontage[is.na(test$LotFrontage)] = median(test$LotFrontage, na.rm = TRU
 train$LotFrontage[is.na(train$LotFrontage)] = median(train$LotFrontage, na.rm = TRUE)
 ```
 
-Store the categorical attributes as a separate data frame to perform one-hot encoding. Afterwards perform random forest feature selection to rank the feature importance
-#```{r}
-# set.seed(7)
-# library(dplyr)
-# library(caret)
-# library(randomForest)
-# categoricalTrain <- select_if(train, is.character)
-# categoricalTest <- select_if(test, is.character)
-# 
-# dummyHotEncodingTrain <- dummyVars(" ~ .", data = categoricalTrain)
-# hotEncodedTrain <- data.frame(predict(dummyHotEncodingTrain, newdata = categoricalTrain))
-# hotEncodedTrain
-# 
-# #remove Utilities column as it's all "AllPub"
-# noUtilitiesTest <- subset(categoricalTest, select = -Utilities)
-# dummyHotEncodingTest <- dummyVars(" ~ .", data = noUtilitiesTest)
-# hotEncodedTest <- data.frame(predict(dummyHotEncodingTest, newdata = noUtilitiesTest))
-# hotEncodedTest
-# 
-# numericalTrain <- select_if(train, is.numeric)
-# numericalTest <- select_if(test, is.numeric)
-# 
-# newTrain <- cbind(numericalTrain, hotEncodedTrain)
-# newTest <- cbind(numericalTest, hotEncodedTest)
-# 
-# #newTrain[,1:4]
-# x <- train[1:1000,]
-# y<- train[1001:1451,]
-# rfImp <- randomForest(SalePrice ~., data = x, importance = TRUE, na.action = na.roughfix)
-#```
-
 Corrplot to see what is plotted in relevance
 ```{r}
 library(corrplot)
@@ -659,9 +609,6 @@ filter <- apply(cor_filter,1, function(x) sum(abs(x) >= threshold))
 sel <- filter
 cor_final <- cor_filter[sel, sel]
 corrplot(cor_final, method = "color")
-#blah<-testCor[rowSums(abs(testCor) >0.9) == ncol(testCor),]
-#blah
-#corrplot(df, method = "number")
 ```
 
 For the purposes of forming a linear regression model, the categorical attributes most be assigned a number value instead of a character value.
@@ -774,23 +721,6 @@ importance(rfImp)
 varImpPlot(rfImp, n.var = 10)
 varImp(rfImp)
 ```
-```{r}
-# set.seed(100)
-# options(warn=-1)
-# 
-# subsets <- c(1:5, 10, 15, 18)
-# 
-# ctrl <- rfeControl(functions = rfFuncs,
-#                    method = "repeatedcv",
-#                    repeats = 5,
-#                    verbose = FALSE)
-# 
-# lmProfile <- rfe(x=modifiedTrain, y=modifiedTrain$SalePrice,
-#                  sizes = subsets,
-#                  rfeControl = ctrl)
-# 
-# lmProfile
-```
 
 Normalize the data. The Utilities attribute for the train dataset all contain 0 -- it is not possible to normalize that column if they all have the same value.
 ```{r}
@@ -802,31 +732,6 @@ normalize <- function(x) {
 testNorm <- apply(modifiedTest[, c(2:9, 11:80)],2,function(x) (x-min(x)/(max(x)-min(x))))
 trainNorm <- apply(modifiedTrain[, 2:81],2,function(x) (x-min(x)/(max(x)-min(x))))
 ```
-
-
-PCA for further attribute analysis
-# ```{r}
-# library(factoextra)
-# 
-# train.pca <- prcomp(trainNorm, scale = TRUE, center = TRUE)
-# train1.pca <- prcomp(modifiedTrain, scale = TRUE, center = TRUE)
-# #train.pca
-# #princomp(trainNorm)
-# fviz_eig(train1.pca)
-# fviz_eig(train.pca)
-# fviz_pca_var(train.pca, col.var = "contrib",
-#              gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), repel = TRUE)
-# 
-# eig.val <- get_eigenvalue(train.pca)
-# 
-# fviz_contrib(train.pca, choice = "var", axes = 1, top = 10)
-# eig.val
-# #fviz_pca_biplot(train.pca, repel = TRUE, col.var = "#2E9FDF", col.ind = "#696969")
-# 
-# test.pca <- prcomp(testNorm, scale = TRUE, center = TRUE)
-# fviz_contrib(test.pca, choice = "var", axes = 1, top = 10)
-# fviz_eig(test.pca)
-# ```
 
 Linear training model with K-fold cross-validation of 10-folds
 ```{r}
@@ -844,16 +749,6 @@ model <- train(SalePrice ~., data = trainNorm, method = "lm",
                trControl = train.control)
 # Summarize the results
 print(model)
-
-#model_train <- lm(SalePrice ~ ., data = data.frame(modifiedTrain))
-#model_train
-
-
-#Tried attributute valuation with stepwise regression. Too big.
-#stepF <- stepAIC(null, scope = list(lower=null, upper=full), direction = "forward", trace = TRUE)
-#subsets <- regsubsets(SalePrice~ ., data = data.frame(trainNorm), nbest = 1, nvmax = 10, really.big = TRUE)
-#sub.sum <- summary(subsets)
-#as.data.frame(sub.sum$outmat)
 ```
 
 Revised version with reduced feature selection that was selected via Random Forest
@@ -872,7 +767,7 @@ print(model)
 summary(model)
 ```
 
-Predict some test data
+Predict some test data to prepare for lasso regression.
 ```{r}
 predicted_prices <- predict(model, newdata = modifiedTrain)
 head(predicted_prices)
@@ -880,7 +775,7 @@ predicted_prices <- predict(model, newdata = modifiedTest)
 head(predicted_prices)
 ```
 
-Parition Data
+Partition Data
 ```{r}
 set.seed(100)
 
@@ -903,8 +798,6 @@ pre_proc_val <- preProcess(modifiedTrain[,cols], method = c("center", "scale"))
 
 train1[,cols] = predict(pre_proc_val, train1[,cols])
 test1[,cols] = predict(pre_proc_val, test1[,cols])
-
-summary(train1)
 ```
 
 Regularize coefficients
@@ -914,13 +807,12 @@ cols_reg = c("OverallQual", "GrLivArea", "GarageCars","YearBuilt","TotalBsmtSF",
 dummies <- dummyVars(SalePrice ~ ., data = modifiedTrain[,cols_reg])
 
 train_dummies = predict(dummies, newdata = train1[,cols_reg])
-
 test_dummies = predict(dummies, newdata = test1[,cols_reg])
 
 print(dim(train_dummies)); print(dim(test_dummies))
-
 ```
 
+Develop regularized lasso regression to find best lambda
 ```{r}
 x <- as.matrix(train_dummies)
 y_train <- train1$SalePrice
@@ -935,9 +827,9 @@ lambda_best <- lasso_reg$lambda.min
 lambda_best
 ```
 
+Model lasso regression
 ```{r}
 lasso_model <- glmnet(x, y_train, alpha = 1, lambda = lambda_best, standardize = TRUE)
-
 
 eval_results <- function(true, predicted, df) {
   SSE <- sum((predicted - true)^2)
@@ -945,8 +837,7 @@ eval_results <- function(true, predicted, df) {
   R_square <- 1 - SSE / SST
   RMSE = sqrt(SSE/nrow(df))
 
-  
-  # Model performance metrics
+# Model performance metrics
 data.frame(
   RMSE = RMSE,
   Rsquare = R_square
@@ -963,6 +854,7 @@ eval_results(y_test, predictions_test, modifiedTest)
 #predictions_test
 ```
 
+Make lasso regression letting its own algorithm determine features/attributes.
 ```{r}
 set.seed(100)
 
@@ -971,23 +863,16 @@ index = sample(1:nrow(modifiedTrain), 0.7*nrow(modifiedTrain))
 train2 = modifiedTrain[index, ] #training
 test2 = modifiedTrain[-index, ] #test data
 
-
-#cols = c("OverallQual", "GrLivArea", "GarageCars","YearBuilt","TotalBsmtSF", "X1stFlrSF", "GarageArea", "ExterQual", "BsmtFinSF1", "BsmtQual")
-
 pre_proc_val1 <- preProcess(modifiedTrain, method = c("center", "scale"))
 
 train2 = predict(pre_proc_val, train2)
 test2 = predict(pre_proc_val1, test2)
 
-#summary(train1)
 
 dummies <- dummyVars(SalePrice ~ ., data = modifiedTrain)
 
 train_dummies1 = predict(dummies, newdata = train2)
-
 test_dummies1 = predict(dummies, newdata = test2)
-
-#print(dim(train_dummies1)); print(dim(test_dummies1))
 
 
 x <- as.matrix(train_dummies1)
@@ -1013,7 +898,7 @@ eval_results <- function(true, predicted, df) {
   RMSE = sqrt(SSE/nrow(df))
 
   
-  # Model performance metrics
+# Model performance metrics
 data.frame(
   RMSE = RMSE,
   Rsquare = R_square
@@ -1027,42 +912,4 @@ eval_results(y_train, predictions_train, modifiedTrain)
 
 predictions_test <- predict(lasso_model, s = lambda_best, newx = x_test)
 eval_results(y_test, predictions_test, modifiedTest)
-#predictions_test
 ```
-```{r}
-predicted_prices_t <- predict(lasso_model, s = lambda_best, newx = x)
-head(predicted_prices_t)
-```
-
-
-
-```{r}
-#library(plyr)
-#library(readr)
-#library(dplyr)
-#library(caret)
-#library(ggplot2)
-#library(repr)
-
-eval_metrics = function(model, df, predictions, target){
-    resids = df[,target] - predictions
-    resids2 = resids**2
-    N = length(predictions)
-    r2 = as.character(round(summary(model)$r.squared, 2))
-    adj_r2 = as.character(round(summary(model)$adj.r.squared, 2))
-    print(adj_r2) #Adjusted R-squared
-    print(as.character(round(sqrt(sum(resids2)/N), 2))) #RMSE
-}
-
-#linear model with reduced attributes
-predictions = predict(model, newdata = train1)
-eval_metrics(model, train, predictions, target = train1$SalePrice)
-predictions = predict(model, newdata = test1)
-eval_metrics(model, test, predictions, target = test1$SalePrice)
-```
-
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
-
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
-
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
