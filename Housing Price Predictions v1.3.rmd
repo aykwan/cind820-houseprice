@@ -750,6 +750,13 @@ model <- train(SalePrice ~., data = trainNorm, method = "lm",
 # Summarize the results
 print(model)
 ```
+Plot of linear regression with with all attributes.
+```{r}
+predicted_pricesLM <- predict(model, newdata = modifiedTrain)
+ plot(predicted_pricesLM ,modifiedTrain$SalePrice,
+      xlab="Predicted Prices",ylab="Actual Prices", main = "Linear Regression - All Attributes")
+ abline(a=0,b=1)
+```
 
 Revised version with reduced feature selection that was selected via Random Forest
 ```{r}
@@ -766,13 +773,18 @@ model <- train(SalePrice ~ OverallQual+GrLivArea+GarageCars+YearBuilt+TotalBsmtS
 print(model)
 summary(model)
 ```
-
-Predict some test data to prepare for lasso regression.
+Predict some using the linear model of selected features.
 ```{r}
-predicted_prices <- predict(model, newdata = modifiedTrain)
-head(predicted_prices)
+predicted_pricesTrain <- predict(model, newdata = modifiedTrain)
+head(predicted_pricesTrain)
 predicted_prices <- predict(model, newdata = modifiedTest)
 head(predicted_prices)
+```
+Plot of linear regression with with random-forest selected features.
+```{r}
+ plot(predicted_pricesTrain ,modifiedTrain$SalePrice,
+      xlab="Predicted Prices",ylab="Actual Prices", main = "Linear Regression with Random-Forest")
+ abline(a=0,b=1)
 ```
 
 Partition Data
@@ -851,7 +863,13 @@ eval_results(y_train, predictions_train, modifiedTrain)
 
 predictions_test <- predict(lasso_model, s = lambda_best, newx = x_test)
 eval_results(y_test, predictions_test, modifiedTest)
-#predictions_test
+```
+
+Plot of lasso regression with with random-forest selected features.
+```{r}
+ plot(predictions_train ,train1$SalePrice,
+      xlab="Predicted Prices",ylab="Actual Prices", main = "Lasso Regression with Random-Forest")
+ abline(a=0,b=1)
 ```
 
 Make lasso regression letting its own algorithm determine features/attributes.
@@ -913,3 +931,10 @@ eval_results(y_train, predictions_train, modifiedTrain)
 predictions_test <- predict(lasso_model, s = lambda_best, newx = x_test)
 eval_results(y_test, predictions_test, modifiedTest)
 ```
+Plot of lasso regression with all attributes.
+```{r}
+ plot(predictions_train ,train2$SalePrice,
+      xlab="Predicted Prices",ylab="Actual Prices", main = "Lasso Regression - All Attributes")
+ abline(a=0,b=1)
+```
+
